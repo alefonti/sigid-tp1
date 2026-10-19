@@ -1,38 +1,34 @@
 package ar.org.estrelladelsur.sigid.modelo;
 
-/** Adulto responsable de uno o más jugadores. */
-public class Tutor {
+/**
+ * HERENCIA: adulto responsable de uno o más jugadores. Es la persona
+ * que recibe las notificaciones de convocatoria.
+ */
+public class Tutor extends Persona {
 
-    private int    idTutor;
-    private String documento;
-    private String apellido;
-    private String nombre;
-    private String telefono;
-    private String email;
+    private String parentesco;
 
-    public Tutor() { }
-
-    public Tutor(int idTutor, String apellido, String nombre, String telefono, String email) {
-        this.idTutor  = idTutor;
-        this.apellido = apellido;
-        this.nombre   = nombre;
-        this.telefono = telefono;
-        this.email    = email;
+    public Tutor() {
+        super();
     }
 
-    public String nombreCompleto() { return apellido + ", " + nombre; }
+    public Tutor(int idTutor, String apellido, String nombre, String telefono, String email) {
+        super(null, apellido, nombre);
+        setId(idTutor);
+        setTelefono(telefono);
+        setEmail(email);
+    }
 
-    public int    getIdTutor()   { return idTutor; }
-    public String getDocumento() { return documento; }
-    public String getApellido()  { return apellido; }
-    public String getNombre()    { return nombre; }
-    public String getTelefono()  { return telefono; }
-    public String getEmail()     { return email; }
+    @Override public String getRol() { return "Tutor"; }
 
-    public void setIdTutor(int v)     { this.idTutor = v; }
-    public void setDocumento(String v){ this.documento = v; }
-    public void setApellido(String v) { this.apellido = v; }
-    public void setNombre(String v)   { this.nombre = v; }
-    public void setTelefono(String v) { this.telefono = v; }
-    public void setEmail(String v)    { this.email = v; }
+    @Override public String getDetalle() {
+        String contacto = tieneEmail() ? getEmail() : getTelefono();
+        return (parentesco != null ? parentesco + " | " : "") + "contacto " + contacto;
+    }
+
+    public int    getIdTutor()    { return getId(); }
+    public String getParentesco() { return parentesco; }
+
+    public void setIdTutor(int v)        { setId(v); }
+    public void setParentesco(String v)  { this.parentesco = v; }
 }

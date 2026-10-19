@@ -17,4 +17,6 @@ public interface JugadorDAO {
     boolean       actualizar(Jugador jugador);
     boolean       eliminar(int idJugador);
     int           contarActivosPorDivision(int idDivision);
+    /** Padrón completo (activos e inactivos), usado por búsquedas y ordenamientos. */
+    List<Jugador> listarTodos();
 }

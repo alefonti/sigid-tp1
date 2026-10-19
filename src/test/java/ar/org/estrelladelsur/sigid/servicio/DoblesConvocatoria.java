@@ -30,19 +30,41 @@ class DoblesConvocatoria {
         @Override public boolean eliminar(int idEvento, int idJugador) {
             return almacen.removeIf(c -> c.getIdEvento() == idEvento && c.getIdJugador() == idJugador);
         }
+
+        @Override public int confirmarTodas(int idEvento) {
+            int n = 0;
+            for (Convocatoria c : almacen) {
+                if (c.getIdEvento() == idEvento) { c.setConfirmada(true); n++; }
+            }
+            return n;
+        }
     }
 
     static class DobleTutorDAO implements TutorDAO {
         private final List<Tutor> tutores;
         DobleTutorDAO(List<Tutor> tutores) { this.tutores = tutores; }
         @Override public List<Tutor> listarPorEvento(int idEvento) { return tutores; }
+        @Override public Tutor buscarPorId(int idTutor) {
+            return tutores.stream().filter(t -> t.getIdTutor() == idTutor).findFirst().orElse(null);
+        }
+        @Override public List<Tutor> listarTodos() { return tutores; }
     }
 
     static class DobleNotificacionDAO implements NotificacionDAO {
         final List<Notificacion> enviadas = new ArrayList<>();
         @Override public int insertar(Notificacion n) {
             enviadas.add(n);
+            n.setIdNotificacion(enviadas.size());
             return enviadas.size();
+        }
+        @Override public List<Notificacion> listarPendientes() {
+            return enviadas.stream().filter(n -> "PENDIENTE".equals(n.getEstadoEnvio())).toList();
+        }
+        @Override public boolean actualizarEstado(int id, String estado) {
+            for (Notificacion n : enviadas) {
+                if (n.getIdNotificacion() == id) { n.setEstadoEnvio(estado); return true; }
+            }
+            return false;
         }
     }
 }

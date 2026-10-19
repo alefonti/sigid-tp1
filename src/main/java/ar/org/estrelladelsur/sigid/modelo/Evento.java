@@ -1,59 +1,103 @@
 package ar.org.estrelladelsur.sigid.modelo;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-/** Entrenamiento o partido de una división. */
-public class Evento {
+/**
+ * ABSTRACCIÓN: actividad de la agenda deportiva de una división.
+ *
+ * Un evento siempre es, en concreto, un Entrenamiento o un Partido. Cada
+ * subclase define si admite convocatoria y cómo se describe; lo común
+ * (fecha, horario, sede, estado) vive acá una sola vez.
+ */
+public abstract class Evento implements Identificable, Comparable<Evento> {
 
-    private int        idEvento;
-    private TipoEvento tipo;
-    private LocalDate  fecha;
-    private LocalTime  horaInicio;
-    private LocalTime  horaFin;
-    private String     rival;
-    private String     condicion;
-    private String     estado = "PROGRAMADO";
-    private int        idDivision;
-    private int        idSede;
+    private int       id;
+    private LocalDate fecha;
+    private LocalTime horaInicio;
+    private LocalTime horaFin;
+    private String    estado = "PROGRAMADO";
+    private int       idDivision;
+    private int       idSede;
 
-    public Evento() { }
+    protected Evento() { }
 
-    public Evento(TipoEvento tipo, LocalDate fecha, LocalTime horaInicio,
-                  LocalTime horaFin, int idDivision, int idSede) {
-        this.tipo       = tipo;
+    protected Evento(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin,
+                     int idDivision, int idSede) {
         this.fecha      = fecha;
         this.horaInicio = horaInicio;
-        this.horaFin    = horaFin;
         this.idDivision = idDivision;
         this.idSede     = idSede;
+        setHoraFin(horaFin);
     }
 
-    public boolean esPartido() { return tipo == TipoEvento.PARTIDO; }
+    /**
+     * Método de fábrica: crea la subclase que corresponde al tipo leído de
+     * la base de datos. Quien lo usa sólo conoce la abstracción Evento.
+     */
+    public static Evento crear(TipoEvento tipo) {
+        return switch (tipo) {
+            case PARTIDO       -> new Partido();
+            case ENTRENAMIENTO -> new Entrenamiento();
+        };
+    }
 
-    public int        getIdEvento()   { return idEvento; }
-    public TipoEvento getTipo()       { return tipo; }
-    public LocalDate  getFecha()      { return fecha; }
-    public LocalTime  getHoraInicio() { return horaInicio; }
-    public LocalTime  getHoraFin()    { return horaFin; }
-    public String     getRival()      { return rival; }
-    public String     getCondicion()  { return condicion; }
-    public String     getEstado()     { return estado; }
-    public int        getIdDivision() { return idDivision; }
-    public int        getIdSede()     { return idSede; }
+    // ------------------------------------------------------------ métodos abstractos
 
-    public void setIdEvento(int v)        { this.idEvento = v; }
-    public void setTipo(TipoEvento v)     { this.tipo = v; }
-    public void setFecha(LocalDate v)     { this.fecha = v; }
-    public void setHoraInicio(LocalTime v){ this.horaInicio = v; }
-    public void setHoraFin(LocalTime v)   { this.horaFin = v; }
-    public void setRival(String v)        { this.rival = v; }
-    public void setCondicion(String v)    { this.condicion = v; }
-    public void setEstado(String v)       { this.estado = v; }
-    public void setIdDivision(int v)      { this.idDivision = v; }
-    public void setIdSede(int v)          { this.idSede = v; }
+    public abstract TipoEvento getTipo();
+
+    /** Sólo los partidos admiten convocatoria (CU05). */
+    public abstract boolean admiteConvocatoria();
+
+    /** Descripción específica de cada tipo de evento. */
+    public abstract String descripcion();
+
+    // ------------------------------------------------------------ comportamiento común
+
+    public long duracionMinutos() {
+        return Duration.between(horaInicio, horaFin).toMinutes();
+    }
+
+    public boolean esPartido() { return getTipo() == TipoEvento.PARTIDO; }
+
+    public boolean esFuturo(LocalDate hoy) { return !fecha.isBefore(hoy); }
+
+    /** Orden cronológico (fecha y hora de inicio). */
+    @Override
+    public int compareTo(Evento otro) {
+        int porFecha = fecha.compareTo(otro.fecha);
+        return porFecha != 0 ? porFecha : horaInicio.compareTo(otro.horaInicio);
+    }
+
+    // ------------------------------------------------------------ accesores
+
+    @Override public int getId()   { return id; }
+    public int       getIdEvento() { return id; }
+    public LocalDate getFecha()      { return fecha; }
+    public LocalTime getHoraInicio() { return horaInicio; }
+    public LocalTime getHoraFin()    { return horaFin; }
+    public String    getEstado()     { return estado; }
+    public int       getIdDivision() { return idDivision; }
+    public int       getIdSede()     { return idSede; }
+
+    public void setIdEvento(int v)         { this.id = v; }
+    public void setFecha(LocalDate v)      { this.fecha = v; }
+    public void setHoraInicio(LocalTime v) { this.horaInicio = v; }
+    public void setEstado(String v)        { this.estado = v; }
+    public void setIdDivision(int v)       { this.idDivision = v; }
+    public void setIdSede(int v)           { this.idSede = v; }
+
+    /** Encapsulamiento: el horario de fin debe ser posterior al de inicio. */
+    public final void setHoraFin(LocalTime v) {
+        if (v != null && horaInicio != null && !v.isAfter(horaInicio)) {
+            throw new IllegalArgumentException("La hora de fin debe ser posterior a la de inicio.");
+        }
+        this.horaFin = v;
+    }
 
     @Override public String toString() {
-        return tipo + " " + fecha + " " + horaInicio + (rival != null ? " vs " + rival : "");
+        return String.format("[%d] %-13s %s %s-%s  %-34s %s",
+                id, getTipo(), fecha, horaInicio, horaFin, descripcion(), estado);
     }
 }

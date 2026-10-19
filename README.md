@@ -1,11 +1,13 @@
 # SIGID · Sistema de Gestión Integral de Divisiones Inferiores
 
-Prototipo operacional correspondiente al **Trabajo Práctico 2** de Seminario de Práctica
-(Universidad Siglo 21). Caso: Club Social y Deportivo "Estrella del Sur".
+Prototipo operacional de Seminario de Práctica (Universidad Siglo 21).
+Caso: Club Social y Deportivo "Estrella del Sur".
 
-El prototipo implementa los módulos de **gestión de jugadores, asistencia, fichas médicas,
-convocatorias y notificaciones**, respetando la arquitectura en capas y las reglas de negocio
-definidas en el informe.
+| Entrega | Alcance |
+|---|---|
+| TP1 | Análisis inicial, arquitectura y prototipo de alta de jugadores y asistencia |
+| TP2 | PUD completo (análisis, diseño, implementación, pruebas), base MySQL de 15 tablas, 25 pruebas JUnit |
+| **TP3 (v3.0.0)** | **Aplicación de POO en Java: abstracción, herencia, polimorfismo y encapsulamiento; menú de selección con submenús; manejo de excepciones; estructuras de datos propias (lista enlazada, pila, cola); algoritmos de ordenación y búsqueda; 40 pruebas JUnit** |
 
 ---
 
@@ -16,31 +18,27 @@ definidas en el informe.
 | Java (JDK) | 21 LTS | Lenguaje de desarrollo |
 | MySQL | 8.0 | Persistencia de los datos |
 | mysql-connector-j | 8.4.0 | Driver JDBC |
-| JUnit Jupiter | 5.10.2 | Modelo de pruebas del PUD |
-| Maven | 3.9+ | Compilación y gestión de dependencias |
+| JUnit Jupiter | 5.10.2 | Pruebas unitarias |
+| Maven | 3.9+ | Compilación y dependencias |
 
 ## 2. Estructura del proyecto
 
 ```
-proyecto_java/
-├── pom.xml
-├── sql/
-│   ├── 01_schema.sql      Creación de la base y de las 15 tablas
-│   ├── 02_datos.sql       Inserción de registros de prueba
-│   └── 03_consultas.sql   Consultas SELECT, UPDATE y DELETE
-└── src/
-    ├── main/java/ar/org/estrelladelsur/sigid/
-    │   ├── Main.java                 Punto de entrada
-    │   ├── ui/ConsolaUI.java         Capa de presentación
-    │   ├── servicio/                 Capa de lógica de negocio (reglas RN-01 a RN-10)
-    │   ├── persistencia/             Capa de acceso a datos (patrón DAO + Singleton)
-    │   └── modelo/                   Modelo de dominio (POJOs y enumeraciones)
-    └── test/java/ar/org/estrelladelsur/sigid/servicio/
-        ├── JugadorServiceTest.java       CP-01 a CP-05
-        ├── FichaMedicaServiceTest.java   CP-06 a CP-12
-        ├── ConvocatoriaServiceTest.java  CP-13 a CP-19
-        ├── AsistenciaServiceTest.java    CP-20 a CP-25
-        └── Doble*.java                   Dobles de prueba en memoria
+src/main/java/ar/org/estrelladelsur/sigid/
+├── Main.java                  Punto de entrada: elige MySQL o memoria y lanza el menú
+├── comun/                     SigidException (raíz) y DatoInvalidoException (verificada)
+├── modelo/                    Persona (abstracta) → Jugador, Tutor, Entrenador, ProfesionalMedico
+│                              Evento (abstracta)  → Entrenamiento, Partido
+├── estructuras/               ListaEnlazada<T>, Pila<T>, Cola<T> (implementadas con nodos)
+├── algoritmos/                Ordenamiento (merge sort, quick sort, inserción) y Busqueda (binaria, secuencial)
+├── persistencia/              Contratos DAO, implementaciones JDBC y FabricaDAO (abstracta)
+│   └── memoria/               FabricaDAOMemoria: modo demostración sin MySQL
+├── servicio/                  Reglas de negocio RN-00 a RN-13
+│   ├── notificacion/          Notificador (abstracta) → NotificadorEmail, NotificadorSMS
+│   └── historial/             Operacion (abstracta) → OperacionAsistencia, OperacionConvocatoria,
+│                              OperacionBajaJugador; HistorialOperaciones (pila para deshacer)
+└── ui/                        Entrada (lectura validada), Contexto
+    └── menu/                  MenuConsola (abstracta, método plantilla) → MenuPrincipal y 6 submenús
 ```
 
 ## 3. Puesta en marcha
@@ -52,62 +50,75 @@ mysql -u root -p < sql/01_schema.sql
 mysql -u root -p < sql/02_datos.sql
 ```
 
-Luego crear el usuario de aplicación con privilegios mínimos:
+Usuario de aplicación con privilegios mínimos:
 
 ```sql
-CREATE USER 'sigid_app'@'%' IDENTIFIED BY '<clave>' REQUIRE SSL;
-GRANT SELECT, INSERT, UPDATE, DELETE ON sigid_db.* TO 'sigid_app'@'%';
+CREATE USER 'sigid_app'@'localhost' IDENTIFIED BY 'Sigid2026!';
+GRANT SELECT, INSERT, UPDATE, DELETE ON sigid_db.* TO 'sigid_app'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-### 3.2 Configuración de la conexión
+La conexión se configura en `src/main/resources/sigid.properties`. Para cambiarla sin
+recompilar, se puede copiar ese archivo a la carpeta desde donde se ejecuta el programa.
 
-Ajustar la URL, el usuario y la clave en
-`src/main/java/ar/org/estrelladelsur/sigid/persistencia/ConexionBD.java`.
+### 3.2 Compilación y ejecución
 
-### 3.3 Compilación y ejecución
+Desde un IDE (NetBeans, IntelliJ IDEA o Eclipse): abrir la carpeta como proyecto Maven y
+ejecutar la clase `ar.org.estrelladelsur.sigid.Main`.
+
+Desde la terminal:
 
 ```bash
 mvn clean package
-java -jar target/sigid-2.0.0.jar
+java -jar target/sigid-3.0.0-jar-with-dependencies.jar            # usa MySQL
+java -jar target/sigid-3.0.0-jar-with-dependencies.jar --memoria  # modo demostración
 ```
 
-### 3.4 Ejecución de las pruebas
+Si MySQL no responde al iniciar, el programa avisa y continúa automáticamente en modo
+memoria con los mismos datos de `02_datos.sql`, para que el prototipo pueda probarse en
+cualquier equipo.
+
+### 3.3 Pruebas
 
 ```bash
 mvn test
 ```
 
-Resultado esperado: **25 pruebas ejecutadas, 25 exitosas, 0 fallidas.**
+Resultado esperado: **40 pruebas ejecutadas, 40 exitosas, 0 fallidas** (CP-01 a CP-40).
 
-## 4. Reglas de negocio implementadas
+## 4. Menú del prototipo
 
-| Código | Regla | Clase que la aplica |
+```
+1. Jugadores            registrar, plantel ordenado, buscar por DNI / apellido, baja
+2. Agenda deportiva     ver agenda, programar entrenamiento o partido
+3. Asistencia           tomar asistencia (con justificación), ranking de presentismo
+4. Convocatorias        generar convocatoria con validación médica, ver convocados
+5. Área médica          aptitud de un jugador, informe por división, nueva ficha
+6. Notificaciones       ver y procesar la cola de avisos (FIFO) por e-mail o SMS
+7. Padrón general       listado polimórfico de todas las personas del club
+8. Historial            operaciones reversibles de la sesión
+9. Deshacer             revierte la última operación (pila LIFO)
+0. Salir
+```
+
+## 5. Reglas de negocio
+
+| Código | Regla | Clase |
 |---|---|---|
-| RN-01 | El año de nacimiento del jugador debe corresponder a la división | `JugadorService` |
-| RN-02 | No puede superarse el cupo máximo de la división | `JugadorService` |
-| RN-03 | No se convoca a un jugador sin ficha vigente o con lesión activa | `FichaMedicaService` |
+| RN-00 | Documento, apellido, nombre y nacimiento son obligatorios | `JugadorService` |
+| RN-01 | El año de nacimiento debe corresponder a la división | `JugadorService` |
+| RN-02 | No puede superarse el cupo de la división | `JugadorService` |
+| RN-03 | No se convoca sin ficha vigente o con lesión activa | `FichaMedicaService` |
 | RN-04 | Una convocatoria admite como máximo 18 jugadores | `ConvocatoriaService` |
 | RN-05 | La lista confirmada no puede tener menos de 11 jugadores | `ConvocatoriaService` |
-| RN-06 | El documento del jugador es único en el club | `JugadorService` |
-| RN-08 | El vencimiento de la ficha debe ser posterior a su emisión | `FichaMedicaService` |
+| RN-06 | El documento es único en el club | `JugadorService` |
+| RN-07 | Sólo se opera sobre registros existentes | servicios |
+| RN-08 | El vencimiento de la ficha es posterior a la emisión | `FichaMedicaService` |
 | RN-09 | No se registra dos veces la asistencia al mismo evento | `AsistenciaService` |
-| RN-10 | La justificación de una inasistencia no puede quedar vacía | `AsistenciaService` |
-
-## 5. Decisiones de diseño
-
-- **Arquitectura en tres capas** (presentación, negocio, persistencia) más el modelo de
-  dominio, para que un cambio de interfaz o de motor de base de datos no afecte a las
-  reglas del club.
-- **Patrón DAO con interfaces**: la capa de servicio depende de `JugadorDAO`,
-  `FichaMedicaDAO`, etc., y no de sus implementaciones JDBC. Eso permite sustituirlas por
-  dobles de prueba en memoria y ejecutar la totalidad de las pruebas unitarias sin
-  levantar MySQL.
-- **Singleton en `ConexionBD`**: centraliza la configuración de la conexión.
-- **`PreparedStatement` en todas las sentencias**: evita la inyección de SQL (RNF-02).
-- **Excepciones de negocio con código de regla** (`ReglaNegocioException`): la capa de
-  presentación muestra el motivo exacto del rechazo y la trazabilidad con el informe es
-  directa.
+| RN-10 | La justificación no puede quedar vacía | `AsistenciaService` |
+| RN-11 | Sólo los partidos admiten convocatoria (TP3) | `ConvocatoriaService` |
+| RN-12 | No se programan eventos en el pasado ni fuera del horario del predio (TP3) | `AgendaService` |
+| RN-13 | El tutor debe tener el dato de contacto del canal elegido (TP3) | `Notificador` |
 
 ---
 

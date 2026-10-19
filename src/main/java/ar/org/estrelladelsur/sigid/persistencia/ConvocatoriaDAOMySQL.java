@@ -63,4 +63,16 @@ public class ConvocatoriaDAOMySQL implements ConvocatoriaDAO {
             throw new PersistenciaException("Error al eliminar la convocatoria", e);
         }
     }
+
+    @Override
+    public int confirmarTodas(int idEvento) {
+        String sql = "UPDATE convocatoria SET confirmada = TRUE WHERE id_evento = ?";
+        try (Connection cn = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, idEvento);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al confirmar la convocatoria", e);
+        }
+    }
 }

@@ -144,4 +144,20 @@ public class JugadorDAOMySQL implements JugadorDAO {
         j.setIdDivision(rs.getInt("id_division"));
         return j;
     }
+
+    @Override
+    public List<Jugador> listarTodos() {
+        String sql = "SELECT * FROM jugador";
+        List<Jugador> lista = new ArrayList<>();
+        try (Connection cn = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = cn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                lista.add(mapear(rs));
+            }
+            return lista;
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al listar el padrón de jugadores", e);
+        }
+    }
 }

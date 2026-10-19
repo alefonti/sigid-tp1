@@ -8,10 +8,11 @@
 
   <groupId>ar.org.estrelladelsur</groupId>
   <artifactId>sigid</artifactId>
-  <version>2.0.0</version>
+  <version>3.0.0</version>
   <packaging>jar</packaging>
 
   <name>SIGID - Sistema de Gestión Integral de Divisiones Inferiores</name>
+  <description>Prototipo operacional - Seminario de Práctica - TP3</description>
 
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
@@ -54,6 +55,28 @@
             </manifest>
           </archive>
         </configuration>
+      </plugin>
+      <!-- Genera un .jar ejecutable que ya incluye el driver de MySQL -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.7.1</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <mainClass>ar.org.estrelladelsur.sigid.Main</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals><goal>single</goal></goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

@@ -9,4 +9,6 @@ public interface AsistenciaDAO {
     boolean          existe(int idEvento, int idJugador);
     List<Asistencia> listarPorJugador(int idJugador);
     boolean          actualizarMotivo(int idAsistencia, String motivo);
+    /** Borra un registro; lo usa la operación "deshacer" de la pila. */
+    boolean          eliminar(int idAsistencia);
 }

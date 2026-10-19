@@ -81,4 +81,16 @@ public class AsistenciaDAOMySQL implements AsistenciaDAO {
             throw new PersistenciaException("Error al justificar la inasistencia", e);
         }
     }
+
+    @Override
+    public boolean eliminar(int idAsistencia) {
+        String sql = "DELETE FROM asistencia WHERE id_asistencia = ?";
+        try (Connection cn = ConexionBD.getInstancia().getConexion();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, idAsistencia);
+            return ps.executeUpdate() == 1;
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al eliminar la asistencia " + idAsistencia, e);
+        }
+    }
 }

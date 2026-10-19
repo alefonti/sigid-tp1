@@ -8,4 +8,6 @@ public interface ConvocatoriaDAO {
     int                insertar(Convocatoria convocatoria);
     List<Convocatoria> listarPorEvento(int idEvento);
     boolean            eliminar(int idEvento, int idJugador);
+    /** Marca como confirmadas todas las convocatorias del evento; devuelve cuántas. */
+    int                confirmarTodas(int idEvento);
 }

@@ -44,6 +44,10 @@ class AsistenciaServiceTest {
             }
             return false;
         }
+
+        @Override public boolean eliminar(int idAsistencia) {
+            return almacen.removeIf(a -> a.getIdAsistencia() == idAsistencia);
+        }
     }
 
     private DobleAsistenciaDAO dao;

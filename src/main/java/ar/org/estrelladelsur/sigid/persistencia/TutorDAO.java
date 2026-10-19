@@ -6,4 +6,6 @@ import java.util.List;
 /** Contrato de persistencia de tutores. */
 public interface TutorDAO {
     List<Tutor> listarPorEvento(int idEvento);
+    Tutor       buscarPorId(int idTutor);
+    List<Tutor> listarTodos();
 }

@@ -1,11 +1,13 @@
 package ar.org.estrelladelsur.sigid.servicio;
 
+import ar.org.estrelladelsur.sigid.comun.SigidException;
+
 /**
  * Se lanza cuando una operación viola una regla de negocio del club
- * (RN-01 a RN-05). La capa de presentación la captura para mostrar
- * un mensaje comprensible al usuario.
+ * (RN-00 a RN-13). La capa de presentación la captura para mostrar
+ * un mensaje comprensible al usuario con el código de la regla.
  */
-public class ReglaNegocioException extends RuntimeException {
+public class ReglaNegocioException extends SigidException {
 
     private final String codigoRegla;
 
@@ -16,6 +18,7 @@ public class ReglaNegocioException extends RuntimeException {
 
     public String getCodigoRegla() { return codigoRegla; }
 
+    /** Sobrescritura: antepone el código de la regla al mensaje original. */
     @Override public String getMessage() {
         return "[" + codigoRegla + "] " + super.getMessage();
     }

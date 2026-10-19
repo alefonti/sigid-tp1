@@ -44,4 +44,6 @@ class DobleJugadorDAO implements JugadorDAO {
                 .filter(j -> j.getIdDivision() == idDivision && j.getEstado() == EstadoJugador.ACTIVO)
                 .count();
     }
+
+    @Override public List<Jugador> listarTodos() { return new ArrayList<>(almacen); }
 }

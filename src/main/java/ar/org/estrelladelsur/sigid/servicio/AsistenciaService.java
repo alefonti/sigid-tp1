@@ -1,19 +1,29 @@
 package ar.org.estrelladelsur.sigid.servicio;
 
+import ar.org.estrelladelsur.sigid.algoritmos.Ordenamiento;
 import ar.org.estrelladelsur.sigid.modelo.Asistencia;
 import ar.org.estrelladelsur.sigid.modelo.EstadoAsistencia;
+import ar.org.estrelladelsur.sigid.modelo.Jugador;
 import ar.org.estrelladelsur.sigid.persistencia.AsistenciaDAO;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * Realiza el CU03 - Registrar asistencia y el CU11 - Justificar inasistencia,
  * que lo extiende («extend») cuando el jugador figura como ausente.
  *
- * Regla de negocio RN-09: no puede registrarse dos veces la asistencia
- * del mismo jugador al mismo evento.
+ * Reglas de negocio:
+ *   RN-09: no puede registrarse dos veces la asistencia del mismo jugador al mismo evento.
+ *   RN-10: la justificación de una inasistencia no puede quedar vacía.
  */
 public class AsistenciaService {
+
+    /** Fila del ranking de presentismo (record: clase inmutable de datos, Java 16+). */
+    public record Presentismo(Jugador jugador, double porcentaje, int eventos) { }
+
+    /** Por debajo de este porcentaje el entrenador recibe una alerta (RF-12). */
+    public static final double UMBRAL_ALERTA = 75.0;
 
     private final AsistenciaDAO asistenciaDAO;
 
@@ -41,6 +51,11 @@ public class AsistenciaService {
         return asistenciaDAO.actualizarMotivo(idAsistencia, motivo);
     }
 
+    /** Elimina un registro; lo invoca la operación "deshacer". */
+    public boolean eliminar(int idAsistencia) {
+        return asistenciaDAO.eliminar(idAsistencia);
+    }
+
     /**
      * Porcentaje de presentismo del jugador sobre los eventos registrados.
      * Los estados PRESENTE y TARDE computan como asistencia efectiva.
@@ -52,10 +67,30 @@ public class AsistenciaService {
         if (registros.isEmpty()) {
             return 0d;
         }
-        long presentes = registros.stream()
-                .filter(a -> a.getEstado() == EstadoAsistencia.PRESENTE
-                          || a.getEstado() == EstadoAsistencia.TARDE)
-                .count();
+        int presentes = 0;
+        for (Asistencia a : registros) {             // estructura repetitiva clásica
+            if (a.getEstado() == EstadoAsistencia.PRESENTE
+                    || a.getEstado() == EstadoAsistencia.TARDE) {
+                presentes++;
+            }
+        }
         return Math.round(presentes * 1000d / registros.size()) / 10d;
+    }
+
+    /**
+     * TP3 - Ranking de presentismo ordenado con QUICK SORT de mayor a menor;
+     * a igual porcentaje, primero el que tiene más eventos registrados.
+     */
+    public Presentismo[] ranking(List<Jugador> plantel) {
+        Presentismo[] filas = new Presentismo[plantel.size()];
+        for (int i = 0; i < plantel.size(); i++) {
+            Jugador j = plantel.get(i);
+            filas[i] = new Presentismo(j, porcentajeAsistencia(j.getIdJugador()),
+                                       asistenciaDAO.listarPorJugador(j.getIdJugador()).size());
+        }
+        Ordenamiento.quickSort(filas,
+                Comparator.comparingDouble(Presentismo::porcentaje).reversed()
+                          .thenComparing(Comparator.comparingInt(Presentismo::eventos).reversed()));
+        return filas;
     }
 }

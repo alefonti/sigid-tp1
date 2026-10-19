@@ -39,7 +39,17 @@ INSERT INTO jugador (documento, apellido, nombre, fecha_nacimiento, fecha_alta, 
   ('54345678', 'Gómez',    'Santino',  '2011-12-04', '2024-08-20', 'ACTIVO',  2),
   ('53123456', 'Herrera',  'Nicolás',  '2009-04-18', '2023-03-06', 'ACTIVO',  3),
   ('53234567', 'Ibáñez',   'Franco',   '2009-08-25', '2023-03-06', 'ACTIVO',  3),
-  ('53345678', 'Juárez',   'Valentín', '2009-02-11', '2024-03-04', 'INACTIVO',3);
+  ('53345678', 'Juárez',   'Valentín', '2009-02-11', '2024-03-04', 'INACTIVO',3),
+  -- TP3: se completa el plantel Sub-13 para poder confirmar convocatorias (RN-05)
+  ('55567890', 'Ferreyra', 'Mateo',    '2013-04-22', '2026-03-02', 'ACTIVO',  1),
+  ('55678901', 'Giménez',  'Benjamín', '2013-06-30', '2026-03-02', 'ACTIVO',  1),
+  ('55789012', 'Ledesma',  'Felipe',   '2013-08-15', '2026-03-02', 'ACTIVO',  1),
+  ('55890123', 'Medina',   'Lautaro',  '2013-10-03', '2026-03-09', 'ACTIVO',  1),
+  ('55901234', 'Núñez',    'Ignacio',  '2013-12-19', '2026-03-09', 'ACTIVO',  1),
+  ('56012345', 'Ortiz',    'Valentino','2013-02-27', '2026-03-09', 'ACTIVO',  1),
+  ('56123456', 'Paz',      'Agustín',  '2013-05-08', '2026-04-06', 'ACTIVO',  1),
+  ('56234567', 'Quiroga',  'Dante',    '2013-09-11', '2026-04-06', 'ACTIVO',  1),
+  ('56345678', 'Romero',   'Emiliano', '2013-07-25', '2026-04-06', 'ACTIVO',  1);
 
 -- ---------- Tutores y vínculo N:M ----------
 INSERT INTO tutor (documento, apellido, nombre, telefono, email) VALUES
@@ -49,7 +59,10 @@ INSERT INTO tutor (documento, apellido, nombre, telefono, email) VALUES
   ('26778999', 'Escobar',  'Daniel',   '11-4411-2200', 'descobar@correo.com'),
   ('28334555', 'Herrera',  'Patricia', '11-9911-3344', 'pherrera@correo.com'),
   ('30556777', 'Acuña',    'Sergio',   '11-6677-1122', 'sacuna@correo.com'),
-  ('29667888', 'Juárez',   'Andrea',   '11-2255-6677', 'ajuarez@correo.com');
+  ('29667888', 'Juárez',   'Andrea',   '11-2255-6677', 'ajuarez@correo.com'),
+  ('32778899', 'Ferreyra', 'Mónica',   '11-5566-7788', 'mferreyra@correo.com'),
+  ('27445566', 'Medina',   'Carlos',   '11-3322-1100', NULL),
+  ('33889900', 'Romero',   'Gabriela', '11-8877-6655', 'gromero@correo.com');
 
 INSERT INTO jugador_tutor (id_jugador, id_tutor, parentesco, contacto_primario) VALUES
   (1, 1, 'Madre', TRUE),
@@ -58,7 +71,10 @@ INSERT INTO jugador_tutor (id_jugador, id_tutor, parentesco, contacto_primario) 
   (3, 3, 'Madre', TRUE),
   (5, 4, 'Padre', TRUE),
   (8, 5, 'Madre', TRUE),
-  (10, 7, 'Madre', TRUE);
+  (10, 7, 'Madre', TRUE),
+  (11, 8, 'Madre', TRUE),
+  (14, 9, 'Padre', TRUE),
+  (19, 10, 'Madre', TRUE);
 
 -- ---------- Profesionales, fichas médicas y lesiones ----------
 INSERT INTO profesional (apellido, nombre, matricula, especialidad) VALUES
@@ -74,7 +90,16 @@ INSERT INTO ficha_medica (id_jugador, id_profesional, fecha_emision, fecha_venci
   (6, 1, '2026-02-02', '2027-02-02', FALSE, 'Soplo funcional en estudio'),
   (7, 1, '2026-03-12', '2027-03-12', TRUE,  NULL),
   (8, 1, '2026-02-28', '2027-02-28', TRUE,  NULL),
-  (9, 1, '2026-03-18', '2027-03-18', TRUE,  NULL);
+  (9, 1, '2026-03-18', '2027-03-18', TRUE,  NULL),
+  (11, 1, '2026-03-02', '2027-03-02', TRUE,  NULL),
+  (12, 1, '2026-03-02', '2027-03-02', TRUE,  NULL),
+  (13, 1, '2026-03-03', '2027-03-03', TRUE,  NULL),
+  (14, 1, '2026-03-09', '2027-03-09', TRUE,  NULL),
+  (15, 1, '2026-03-09', '2027-03-09', TRUE,  NULL),
+  (16, 1, '2026-03-10', '2027-03-10', TRUE,  NULL),
+  (17, 1, '2026-04-06', '2027-04-06', TRUE,  NULL),
+  (18, 1, '2026-04-06', '2027-04-06', TRUE,  NULL),
+  (19, 1, '2026-04-07', '2027-04-07', TRUE,  NULL);
 
 INSERT INTO lesion (id_jugador, id_profesional, tipo, gravedad, fecha_inicio, fecha_alta_real) VALUES
   (2, 2, 'Esguince de tobillo grado I',  'LEVE',     '2026-08-02', '2026-08-25'),
@@ -91,10 +116,15 @@ INSERT INTO sede (nombre, direccion, superficie) VALUES
 INSERT INTO evento (tipo, fecha, hora_inicio, hora_fin, rival, condicion, estado, id_division, id_sede) VALUES
   ('ENTRENAMIENTO', '2026-09-15', '17:00:00', '18:30:00', NULL,                 NULL,       'FINALIZADO',  1, 1),
   ('ENTRENAMIENTO', '2026-09-17', '17:00:00', '18:30:00', NULL,                 NULL,       'FINALIZADO',  1, 1),
-  ('PARTIDO',       '2026-09-27', '10:00:00', '11:30:00', 'Club Atlético Norte','LOCAL',    'PROGRAMADO',  1, 1),
+  ('PARTIDO',       '2026-09-27', '10:00:00', '11:30:00', 'Club Atlético Norte','LOCAL',    'FINALIZADO',  1, 1),
   ('ENTRENAMIENTO', '2026-09-16', '19:00:00', '20:30:00', NULL,                 NULL,       'FINALIZADO',  2, 2),
-  ('PARTIDO',       '2026-09-28', '12:00:00', '13:30:00', 'Deportivo Oeste',    'VISITANTE','PROGRAMADO',  2, 2),
-  ('ENTRENAMIENTO', '2026-09-18', '19:00:00', '20:30:00', NULL,                 NULL,       'FINALIZADO',  3, 3);
+  ('PARTIDO',       '2026-09-28', '12:00:00', '13:30:00', 'Deportivo Oeste',    'VISITANTE','FINALIZADO',  2, 2),
+  ('ENTRENAMIENTO', '2026-09-18', '19:00:00', '20:30:00', NULL,                 NULL,       'FINALIZADO',  3, 3),
+  -- TP3: agenda de octubre y noviembre
+  ('ENTRENAMIENTO', '2026-10-20', '17:00:00', '18:30:00', NULL,                 NULL,       'PROGRAMADO',  1, 1),
+  ('ENTRENAMIENTO', '2026-10-22', '17:00:00', '18:30:00', NULL,                 NULL,       'PROGRAMADO',  1, 1),
+  ('PARTIDO',       '2026-10-25', '10:00:00', '11:30:00', 'Social Lugano',      'LOCAL',    'PROGRAMADO',  1, 1),
+  ('PARTIDO',       '2026-11-01', '12:00:00', '13:30:00', 'Villa Real',         'VISITANTE','PROGRAMADO',  2, 2);
 
 -- ---------- Asistencias ----------
 INSERT INTO asistencia (id_evento, id_jugador, estado, motivo) VALUES
@@ -122,4 +152,5 @@ INSERT INTO convocatoria (id_evento, id_jugador, confirmada) VALUES
 INSERT INTO notificacion (id_tutor, id_evento, canal, mensaje, estado_envio) VALUES
   (1, 3, 'EMAIL', 'Tomás fue convocado al partido del 27/09 a las 10:00 en el predio del club.', 'ENVIADA'),
   (6, 3, 'SMS',   'Tomás fue convocado al partido del 27/09 a las 10:00.',                        'ENVIADA'),
-  (2, 3, 'EMAIL', 'Lucas fue convocado al partido del 27/09 a las 10:00 en el predio del club.',  'ENVIADA');
+  (2, 3, 'EMAIL', 'Lucas fue convocado al partido del 27/09 a las 10:00 en el predio del club.',  'ENVIADA'),
+  (3, 9, 'EMAIL', 'Joaquín tiene la ficha médica vencida: debe renovarla antes del partido del 25/10.', 'PENDIENTE');
