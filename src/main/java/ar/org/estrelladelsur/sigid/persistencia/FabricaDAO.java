@@ -19,6 +19,7 @@ public abstract class FabricaDAO {
     public abstract TutorDAO        tutores();
     public abstract NotificacionDAO notificaciones();
     public abstract PersonalDAO     personal();
+    public abstract PlanillaDAO     planillas();     // TP4
 
     /** Texto que la consola muestra para indicar contra qué fuente se trabaja. */
     public abstract String descripcion();

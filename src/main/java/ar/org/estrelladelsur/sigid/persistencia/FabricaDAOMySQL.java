@@ -14,6 +14,7 @@ public class FabricaDAOMySQL extends FabricaDAO {
     private final TutorDAO        tutorDAO        = new TutorDAOMySQL();
     private final NotificacionDAO notificacionDAO = new NotificacionDAOMySQL();
     private final PersonalDAO     personalDAO     = new PersonalDAOMySQL();
+    private final PlanillaDAO     planillaDAO     = new PlanillaDAOMySQL();
 
     @Override public JugadorDAO      jugadores()      { return jugadorDAO; }
     @Override public DivisionDAO     divisiones()     { return divisionDAO; }
@@ -25,6 +26,7 @@ public class FabricaDAOMySQL extends FabricaDAO {
     @Override public TutorDAO        tutores()        { return tutorDAO; }
     @Override public NotificacionDAO notificaciones() { return notificacionDAO; }
     @Override public PersonalDAO     personal()       { return personalDAO; }
+    @Override public PlanillaDAO     planillas()      { return planillaDAO; }
 
     @Override public String descripcion() {
         return "MySQL (" + ConexionBD.getInstancia().getUrl().replaceAll("\\?.*", "") + ")";

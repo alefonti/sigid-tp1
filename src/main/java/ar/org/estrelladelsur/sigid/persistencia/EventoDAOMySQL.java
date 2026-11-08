@@ -84,7 +84,8 @@ public class EventoDAOMySQL implements EventoDAO {
         }
     }
 
-    private Evento mapear(ResultSet rs) throws SQLException {
+    /** Package-private y estático: también lo reutiliza PlanillaDAOMySQL (TP4). */
+    static Evento mapear(ResultSet rs) throws SQLException {
         Evento e = Evento.crear(TipoEvento.valueOf(rs.getString("tipo")));
         e.setIdEvento(rs.getInt("id_evento"));
         e.setFecha(rs.getDate("fecha").toLocalDate());

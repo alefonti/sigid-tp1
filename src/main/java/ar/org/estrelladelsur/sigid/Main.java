@@ -11,10 +11,10 @@ import ar.org.estrelladelsur.sigid.ui.menu.MenuPrincipal;
 import java.util.Scanner;
 
 /**
- * Punto de entrada del prototipo operacional de SIGID (TP3).
+ * Punto de entrada del prototipo operacional de SIGID (TP4).
  *
- *   java -jar sigid-3.0.0.jar            usa MySQL; si no responde, pasa a memoria
- *   java -jar sigid-3.0.0.jar --memoria  fuerza el modo demostración en memoria
+ *   java -jar sigid-4.0.0.jar            usa MySQL; si no responde, pasa a memoria
+ *   java -jar sigid-4.0.0.jar --memoria  fuerza el modo demostración en memoria
  */
 public class Main {
 

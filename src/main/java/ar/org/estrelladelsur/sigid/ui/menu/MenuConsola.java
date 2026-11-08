@@ -1,5 +1,7 @@
 package ar.org.estrelladelsur.sigid.ui.menu;
 
+import ar.org.estrelladelsur.sigid.archivos.ArchivoException;
+import ar.org.estrelladelsur.sigid.archivos.RegistroErrores;
 import ar.org.estrelladelsur.sigid.comun.DatoInvalidoException;
 import ar.org.estrelladelsur.sigid.estructuras.EstructuraVaciaException;
 import ar.org.estrelladelsur.sigid.modelo.Division;
@@ -67,8 +69,14 @@ public abstract class MenuConsola {
         } catch (EstructuraVaciaException e) {
             System.out.println("  [i] " + e.getMessage());
         } catch (PersistenciaException e) {
-            String causa = e.getCause() != null ? " (" + e.getCause().getMessage() + ")" : "";
-            System.out.println("  [X] Error de base de datos: " + e.getMessage() + causa);
+            // el usuario ve un mensaje breve; la traza completa queda en el log
+            RegistroErrores.registrar(titulo() + " - opción " + opcion, e);
+            System.out.println("  [X] Error de base de datos: " + e.getMessage()
+                             + ". El detalle quedó en " + RegistroErrores.archivo());
+        } catch (ArchivoException e) {
+            RegistroErrores.registrar(titulo() + " - opción " + opcion, e);
+            String causa = e.getCause() != null ? " (" + e.getCause().getClass().getSimpleName() + ")" : "";
+            System.out.println("  [X] Error de archivo: " + e.getMessage() + causa);
         } catch (IllegalArgumentException e) {
             // la lanzan los setters del modelo cuando un dato no respeta su formato
             System.out.println("  [!] " + e.getMessage());

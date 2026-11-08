@@ -6,6 +6,7 @@ import ar.org.estrelladelsur.sigid.persistencia.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -48,6 +49,7 @@ public final class FabricaDAOMemoria extends FabricaDAO {
     private final TutorDAO        tutorDAO        = new TutorMem();
     private final NotificacionDAO notificacionDAO = new NotificacionMem();
     private final PersonalDAO     personalDAO     = new PersonalMem();
+    private final PlanillaDAO     planillaDAO     = new PlanillaMem();
 
     public FabricaDAOMemoria() {
         DatosDemo.cargar(this);
@@ -63,6 +65,7 @@ public final class FabricaDAOMemoria extends FabricaDAO {
     @Override public TutorDAO        tutores()        { return tutorDAO; }
     @Override public NotificacionDAO notificaciones() { return notificacionDAO; }
     @Override public PersonalDAO     personal()       { return personalDAO; }
+    @Override public PlanillaDAO     planillas()      { return planillaDAO; }
 
     @Override public String descripcion() { return "MEMORIA (modo demostración, sin MySQL)"; }
 
@@ -249,5 +252,61 @@ public final class FabricaDAOMemoria extends FabricaDAO {
     private class PersonalMem implements PersonalDAO {
         @Override public List<Entrenador> listarEntrenadores() { return aLista(entrenadores, e -> true); }
         @Override public List<ProfesionalMedico> listarProfesionales() { return aLista(profesionales, p -> true); }
+    }
+
+    /** TP4: mismas reglas que PlanillaDAOMySQL, resueltas recorriendo las listas en memoria. */
+    private class PlanillaMem implements PlanillaDAO {
+        @Override public List<FilaPresentismo> presentismoPorDivision(int idDivision) {
+            List<Jugador> plantel = jugadorDAO.listarPorDivision(idDivision);
+            plantel.sort(Comparator.comparing(Jugador::getApellido).thenComparing(Jugador::getNombre));
+            List<FilaPresentismo> filas = new ArrayList<>();
+            for (Jugador j : plantel) {
+                FilaPresentismo fila = new FilaPresentismo(j.getIdJugador(), j.getApellido(), j.getNombre());
+                for (Asistencia a : asistencias) {
+                    if (a.getIdJugador() == j.getIdJugador()) {
+                        fila.sumar(a.getEstado(), 1);
+                    }
+                }
+                filas.add(fila);
+            }
+            return filas;
+        }
+        @Override public List<Evento> pendientesDeCierre(int idDivision, LocalDate hoy) {
+            List<Evento> lista = aLista(eventos, e -> e.getIdDivision() == idDivision
+                    && e.getFecha().isBefore(hoy)
+                    && ("PROGRAMADO".equals(e.getEstado()) || "CONFIRMADO".equals(e.getEstado())));
+            lista.sort(Comparator.naturalOrder());
+            return lista;
+        }
+        @Override public int cerrarEvento(int idEvento) {
+            Evento e = eventoDAO.buscarPorId(idEvento);
+            if (e == null) {
+                throw new PersistenciaException("No existe el evento " + idEvento, null);
+            }
+            if ("FINALIZADO".equals(e.getEstado())) {
+                throw new PersistenciaException("El evento " + idEvento + " ya estaba cerrado", null);
+            }
+            // primero se calcula todo y recién después se modifica: si algo
+            // fallara a mitad de camino no quedaría un cierre a medias
+            List<Integer> esperados = new ArrayList<>();
+            if (e.esPartido()) {
+                for (Convocatoria c : convocatorias) {
+                    if (c.getIdEvento() == idEvento) esperados.add(c.getIdJugador());
+                }
+            } else {
+                for (Jugador j : jugadorDAO.listarPorDivision(e.getIdDivision())) esperados.add(j.getIdJugador());
+            }
+            List<Integer> faltantes = new ArrayList<>();
+            for (Integer id : esperados) {
+                if (!asistenciaDAO.existe(idEvento, id)) faltantes.add(id);
+            }
+            for (Integer id : faltantes) {
+                Asistencia a = new Asistencia(idEvento, id, EstadoAsistencia.AUSENTE);
+                a.setMotivo("Registrado al cerrar el evento");
+                asistenciaDAO.insertar(a);
+            }
+            e.setEstado("FINALIZADO");
+            return faltantes.size();
+        }
     }
 }

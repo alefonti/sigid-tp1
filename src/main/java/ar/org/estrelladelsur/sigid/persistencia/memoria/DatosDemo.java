@@ -191,6 +191,13 @@ final class DatosDemo {
             {4, 7, "JUSTIFICADO", "Lesión en tratamiento"},
             {6, 8, "PRESENTE", null}, {6, 9, "AUSENTE", null},
             {6, 10, "JUSTIFICADO", "Jugador con baja temporaria"},
+            // TP4: entrenamientos de octubre de la Sub-13 (el del 22/10 quedó incompleto)
+            {7, 1, "PRESENTE", null}, {7, 2, "PRESENTE", null}, {7, 3, "AUSENTE", null}, {7, 4, "PRESENTE", null},
+            {7, 11, "PRESENTE", null}, {7, 12, "TARDE", null}, {7, 13, "PRESENTE", null}, {7, 14, "PRESENTE", null},
+            {7, 15, "JUSTIFICADO", "Turno médico"}, {7, 16, "PRESENTE", null}, {7, 17, "PRESENTE", null}, {7, 18, "PRESENTE", null},
+            {7, 19, "PRESENTE", null}, {8, 1, "PRESENTE", null}, {8, 2, "PRESENTE", null}, {8, 4, "PRESENTE", null},
+            {8, 11, "PRESENTE", null}, {8, 12, "PRESENTE", null}, {8, 13, "TARDE", null}, {8, 14, "PRESENTE", null},
+            {8, 15, "PRESENTE", null}, {8, 17, "PRESENTE", null}, {8, 18, "PRESENTE", null}, {8, 19, "PRESENTE", null},
         };
         for (Object[] r : filas) {
             Asistencia a = new Asistencia((Integer) r[0], (Integer) r[1],

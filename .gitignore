@@ -5,3 +5,7 @@ build/
 *.iml
 .vscode/
 nbproject/private/
+
+# archivos que genera el programa al ejecutarse (TP4)
+reportes/
+logs/

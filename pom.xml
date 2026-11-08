@@ -8,11 +8,11 @@
 
   <groupId>ar.org.estrelladelsur</groupId>
   <artifactId>sigid</artifactId>
-  <version>3.0.0</version>
+  <version>4.0.0</version>
   <packaging>jar</packaging>
 
   <name>SIGID - Sistema de Gestión Integral de Divisiones Inferiores</name>
-  <description>Prototipo operacional - Seminario de Práctica - TP3</description>
+  <description>Prototipo operacional - Seminario de Práctica - TP4</description>
 
   <properties>
     <maven.compiler.source>21</maven.compiler.source>

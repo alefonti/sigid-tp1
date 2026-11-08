@@ -17,7 +17,7 @@ public class MenuPrincipal extends MenuConsola {
     }
 
     @Override protected String titulo() {
-        return "SIGID v3 - Club Social y Deportivo \"Estrella del Sur\"\n  Datos: "
+        return "SIGID v4 - Club Social y Deportivo \"Estrella del Sur\"\n  Datos: "
              + ctx.fabrica().descripcion() + " | Fecha de trabajo: " + ctx.hoy();
     }
 
@@ -29,6 +29,7 @@ public class MenuPrincipal extends MenuConsola {
             "Convocatorias",
             "Área médica",
             "Notificaciones a tutores (" + ctx.notificaciones().cantidadPendientes() + " en cola)",
+            "Reportes, cierre de eventos y archivos",
             "Padrón general de personas            (polimorfismo)",
             "Historial de la sesión (" + ctx.historial().tamanio() + ")",
             "Deshacer última operación              (pila LIFO)"
@@ -48,6 +49,7 @@ public class MenuPrincipal extends MenuConsola {
             case 4 -> new MenuConvocatorias(ctx, in);
             case 5 -> new MenuAreaMedica(ctx, in);
             case 6 -> new MenuNotificaciones(ctx, in);
+            case 7 -> new MenuReportes(ctx, in);
             default -> null;
         };
         if (submenu != null) {
@@ -55,9 +57,9 @@ public class MenuPrincipal extends MenuConsola {
             return;
         }
         switch (opcion) {
-            case 7 -> padronGeneral();
-            case 8 -> verHistorial();
-            case 9 -> deshacer();
+            case 8 -> padronGeneral();
+            case 9 -> verHistorial();
+            case 10 -> deshacer();
             default -> throw new IllegalStateException("Opción no contemplada: " + opcion);
         }
     }

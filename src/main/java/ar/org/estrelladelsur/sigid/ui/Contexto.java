@@ -22,6 +22,8 @@ public class Contexto {
     private final ConvocatoriaService  convocatorias;
     private final AgendaService        agenda;
     private final ClubService          club;
+    private final ReporteService       reportes;   // TP4
+    private final ArchivoService       archivos;   // TP4
     private final HistorialOperaciones historial = new HistorialOperaciones();
 
     public Contexto(FabricaDAO fabrica) {
@@ -34,6 +36,8 @@ public class Contexto {
         this.agenda         = new AgendaService(fabrica.eventos());
         this.club           = new ClubService(fabrica.divisiones(), fabrica.jugadores(),
                                               fabrica.tutores(), fabrica.personal());
+        this.reportes       = new ReporteService(fabrica.planillas(), fabrica.eventos());
+        this.archivos       = new ArchivoService(fabrica.jugadores(), jugadores, club);
     }
 
     /** Fecha de trabajo. Puede fijarse con -Dsigid.hoy=AAAA-MM-DD para demostraciones. */
@@ -51,4 +55,6 @@ public class Contexto {
     public AgendaService        agenda()         { return agenda; }
     public ClubService          club()           { return club; }
     public HistorialOperaciones historial()      { return historial; }
+    public ReporteService       reportes()       { return reportes; }
+    public ArchivoService       archivos()       { return archivos; }
 }

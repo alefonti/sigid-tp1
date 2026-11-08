@@ -143,6 +143,35 @@ INSERT INTO asistencia (id_evento, id_jugador, estado, motivo) VALUES
   (6, 9, 'AUSENTE',     NULL),
   (6, 10,'JUSTIFICADO', 'Jugador con baja temporaria');
 
+-- TP4: asistencia de los entrenamientos de octubre de la Sub-13.
+-- La del 22/10 quedó cargada a medias (faltan Cabrera y Ortiz) y el evento
+-- sigue abierto: es el caso que resuelve el CU13 - Cerrar evento.
+INSERT INTO asistencia (id_evento, id_jugador, estado, motivo) VALUES
+  (7, 1, 'PRESENTE', NULL),
+  (7, 2, 'PRESENTE', NULL),
+  (7, 3, 'AUSENTE', NULL),
+  (7, 4, 'PRESENTE', NULL),
+  (7, 11, 'PRESENTE', NULL),
+  (7, 12, 'TARDE', NULL),
+  (7, 13, 'PRESENTE', NULL),
+  (7, 14, 'PRESENTE', NULL),
+  (7, 15, 'JUSTIFICADO', 'Turno médico'),
+  (7, 16, 'PRESENTE', NULL),
+  (7, 17, 'PRESENTE', NULL),
+  (7, 18, 'PRESENTE', NULL),
+  (7, 19, 'PRESENTE', NULL),
+  (8, 1, 'PRESENTE', NULL),
+  (8, 2, 'PRESENTE', NULL),
+  (8, 4, 'PRESENTE', NULL),
+  (8, 11, 'PRESENTE', NULL),
+  (8, 12, 'PRESENTE', NULL),
+  (8, 13, 'TARDE', NULL),
+  (8, 14, 'PRESENTE', NULL),
+  (8, 15, 'PRESENTE', NULL),
+  (8, 17, 'PRESENTE', NULL),
+  (8, 18, 'PRESENTE', NULL),
+  (8, 19, 'PRESENTE', NULL);
+
 -- ---------- Convocatorias y notificaciones ----------
 INSERT INTO convocatoria (id_evento, id_jugador, confirmada) VALUES
   (3, 1, TRUE),

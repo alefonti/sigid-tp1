@@ -5,6 +5,8 @@ Es el prototipo que vengo desarrollando para Seminario de Práctica (Universidad
 
 Permite registrar jugadores, armar la agenda de entrenamientos y partidos, tomar asistencia,
 controlar las fichas médicas, generar convocatorias y avisar a los tutores.
+También saca el reporte de presentismo por división, cierra los eventos que quedaron abiertos
+y exporta/importa planillas CSV (padrón de jugadores e inscripciones).
 
 ## Requisitos
 
@@ -30,11 +32,21 @@ También se puede forzar ese modo pasándole el argumento `--memoria`.
 
 Las pruebas se corren con `mvn test`.
 
+## Archivos que usa el programa
+
+- `importar/jugadores_nuevos.csv`: planilla de ejemplo para probar la importación de inscripciones
+  (tiene algunas líneas con errores a propósito, para ver cómo las informa).
+- `reportes/`: ahí quedan los CSV que se exportan (presentismo y padrón). Se crea sola.
+- `logs/sigid-errores.log`: detalle técnico de los errores de base de datos y de archivos. Se crea sola.
+
+Los CSV usan `;` como separador, así se abren directo en Excel o LibreOffice.
+
 ## Organización del código
 
 - `modelo`: clases del dominio (jugadores, tutores, eventos, fichas médicas, etc.)
 - `servicio`: reglas de negocio del club
-- `persistencia`: acceso a la base de datos
+- `persistencia`: acceso a la base de datos (patrón DAO, con una clase base común para todos los DAO de MySQL)
+- `archivos`: lectura y escritura de CSV y bitácora de errores
 - `ui`: menú de consola
 - `estructuras`: lista enlazada, pila y cola
 - `algoritmos`: ordenamiento y búsqueda
